@@ -14,8 +14,12 @@ def api_root(request):
         }
     })
 
+def health_check(request):
+    return JsonResponse({'status': 'healthy', 'service': 'blog-backend'})
+
 urlpatterns = [
     path('', api_root, name='api-root'),
+    path('api/health/', health_check, name='health-check'),
     path('admin/', admin.site.urls),
     path('api/auth/', include('accounts.urls')),
     path('api/blogs/', include('blogs.urls')),
