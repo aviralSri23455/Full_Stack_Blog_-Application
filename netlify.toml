@@ -1,0 +1,27 @@
+[build]
+  # Frontend build settings
+  command = "cd frontend && npm ci && npm run build"
+  publish = "frontend/dist"
+
+[build.environment]
+  # Node.js version
+  NODE_VERSION = "20"
+
+# Redirect all requests to index.html for React Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# API proxy to backend (if using Netlify Functions)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Environment variables for build
+[context.production.environment]
+  VITE_API_URL = "https://your-backend-url.railway.app/api"
+
+[context.deploy-preview.environment]
+  VITE_API_URL = "https://your-backend-url.railway.app/api"
