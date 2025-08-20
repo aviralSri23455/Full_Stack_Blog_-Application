@@ -1,0 +1,19 @@
+# Ignore frontend files for backend deployment
+frontend/
+node_modules/
+*.log
+.DS_Store
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Git files
+.git/
+.gitignore

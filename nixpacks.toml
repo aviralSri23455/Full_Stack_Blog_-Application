@@ -1,0 +1,18 @@
+[phases.setup]
+nixPkgs = ['python311']
+
+[phases.install]  
+cmds = ['python -m pip install --upgrade pip', 'pip install -r requirements.txt']
+
+[phases.build]
+cmds = [
+  'cd backend',
+  'python manage.py collectstatic --noinput || echo "Collectstatic skipped"'
+]
+
+[start]
+cmd = 'cd backend && python manage.py migrate --noinput && gunicorn blog_backend.wsgi:application --bind 0.0.0.0:$PORT'
+
+[variables]
+PYTHONPATH = '/app/backend'
+DJANGO_SETTINGS_MODULE = 'blog_backend.settings'
