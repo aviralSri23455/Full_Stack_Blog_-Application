@@ -85,7 +85,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:5173
 ```env
 SECRET_KEY=super-secure-production-key-min-50-characters-long
 DEBUG=False
-MONGODB_URI=mongodb+srv://YOUR-USERNAME:YOUR-PASSWORD@cluster.mongodb.net/YOUR-DATABASE-NAME
+MONGODB_URI=mongodb+srv://[USERNAME]:[PASSWORD]@[CLUSTER].mongodb.net/[DATABASE_NAME]
 CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 AWS_ACCESS_KEY_ID=AKIA...
 AWS_SECRET_ACCESS_KEY=...
@@ -231,7 +231,7 @@ git push origin v1.0.0
 ```python
 # ❌ BAD - Hardcoded secrets
 SECRET_KEY = 'django-insecure-actual-secret-key'
-MONGODB_URI = 'mongodb+srv://username:password@cluster.mongodb.net/database'
+MONGODB_URI = 'mongodb+srv://[USERNAME]:[PASSWORD]@[CLUSTER].mongodb.net/[DATABASE_NAME]'
 ```
 
 ### Example of GOOD code:

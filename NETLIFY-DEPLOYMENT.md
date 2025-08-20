@@ -42,7 +42,7 @@ SECRET_KEY=your-super-secret-production-key-50-chars-min
 DEBUG=False
 ALLOWED_HOSTS=.railway.app
 CORS_ALLOWED_ORIGINS=https://your-app-name.netlify.app
-MONGODB_URI=mongodb+srv://YOUR-USERNAME:YOUR-PASSWORD@cluster.mongodb.net/YOUR-DATABASE
+MONGODB_URI=mongodb+srv://[USERNAME]:[PASSWORD]@[CLUSTER].mongodb.net/[DATABASE_NAME]
 ```
 
 6. **Deploy!** Railway builds and runs your Django app automatically.
@@ -105,7 +105,7 @@ SECRET_KEY=django-insecure-your-production-secret-key
 DEBUG=False
 ALLOWED_HOSTS=.railway.app,.netlify.app,localhost
 CORS_ALLOWED_ORIGINS=https://your-app-name.netlify.app
-MONGODB_URI=mongodb+srv://YOUR-USERNAME:YOUR-PASSWORD@cluster.mongodb.net/YOUR-DATABASE
+MONGODB_URI=mongodb+srv://[USERNAME]:[PASSWORD]@[CLUSTER].mongodb.net/[DATABASE_NAME]
 ```
 
 ### Frontend (Netlify):
