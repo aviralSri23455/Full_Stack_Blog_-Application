@@ -169,9 +169,9 @@ const BlogDetail = () => {
             )}
           </header>
           
-          {blog.image && (
+          {(blog.image_url || blog.image) && (
             <div className="blog-featured-image">
-              <img src={getImageUrl(blog.image)} alt={blog.title} />
+              <img src={blog.image_url || getImageUrl(blog.image)} alt={blog.title} />
             </div>
           )}
           

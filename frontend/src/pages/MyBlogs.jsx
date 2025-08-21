@@ -98,9 +98,9 @@ const MyBlogs = () => {
         ) : (
           blogs.map((blog) => (
             <div key={blog._id || blog.django_id} className="blog-item">
-              {blog.image && (
+              {(blog.image_url || blog.image) && (
                 <div className="blog-image">
-                  <img src={getImageUrl(blog.image)} alt={blog.title} />
+                  <img src={blog.image_url || getImageUrl(blog.image)} alt={blog.title} />
                 </div>
               )}
               <div className="blog-info">

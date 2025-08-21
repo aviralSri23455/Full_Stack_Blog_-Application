@@ -87,12 +87,12 @@ export const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
   // If it's already a full URL, return as is
   if (imagePath.startsWith('http')) return imagePath;
-  // If it starts with /media, build the full URL
+  // If it starts with /media, build the full URL with Railway backend
   if (imagePath.startsWith('/media')) {
-    return `http://localhost:8000${imagePath}`;
+    return `${API_BASE_URL.replace('/api', '')}${imagePath}`;
   }
   // If it's just the filename, build the full URL
-  return `http://localhost:8000/media/${imagePath}`;
+  return `${API_BASE_URL.replace('/api', '')}/media/${imagePath}`;
 };
 
 export default api;
