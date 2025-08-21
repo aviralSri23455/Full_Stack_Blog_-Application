@@ -422,6 +422,7 @@ Full_Stack_Blog_Application/
 - **CORS Enabled** - Cross-origin requests configured for frontend integration
 - **Error Handling** - Comprehensive error responses with proper HTTP status codes
 - **Storage Optimization** - File size limits to manage Railway's 100MB constraint
+- **Performance Optimizations** - Caching, connection pooling, and response optimization
 
 ### 🚀 Deployment Features
 - **Railway Backend** - Production-ready Django deployment with Docker
@@ -430,6 +431,7 @@ Full_Stack_Blog_Application/
 - **Environment Variables** - Secure configuration management
 - **Custom Domain Support** - Production URLs with SSL certificates
 - **Automated Deployments** - GitHub integration for continuous deployment
+- **Performance Monitoring** - Built-in response time tracking and optimization
 
 ## 🚀 Production Deployment
 
@@ -471,8 +473,9 @@ Full_Stack_Blog_Application/
 
 4. **Netlify deploys automatically** on every GitHub push
 
-## 🔒 Security Features
+## 🔒 Security & Performance Features
 
+### 🔐 Security
 - **JWT Authentication** - Secure token-based authentication with expiration
 - **Password Hashing** - Django's built-in PBKDF2 password hashing
 - **CORS Protection** - Configured for specific allowed origins only
@@ -480,6 +483,15 @@ Full_Stack_Blog_Application/
 - **File Upload Security** - File type and size validation to prevent malicious uploads
 - **Environment Variables** - Sensitive data stored securely in environment variables
 - **HTTPS Enforcement** - Production deployment uses SSL certificates
+
+### ⚡ Performance Optimizations
+- **Database Connection Pooling** - Keeps connections alive for better performance
+- **Response Caching** - Local memory caching for frequently accessed data
+- **Optimized Login** - Enhanced authentication with better error handling
+- **Performance Monitoring** - Built-in middleware to track response times
+- **Session Management** - Optimized session handling for better login reliability
+- **JWT Token Optimization** - Longer token lifetime to reduce authentication overhead
+- **Database Query Optimization** - Efficient SQLite configuration with timeout handling
 
 ## 🎯 Content Requirements
 
@@ -494,10 +506,16 @@ Full_Stack_Blog_Application/
 ### "User already exists" Error
 - **Problem**: User exists in SQLite but was deleted from MongoDB
 - **Solution**: Use Django shell to check and clean up users:
-```python
-from accounts.models import CustomUser
-CustomUser.objects.filter(email='problematic@email.com').delete()
+```bash
+python manage.py shell -c "from accounts.models import CustomUser; CustomUser.objects.filter(email='problematic@email.com').delete()"
 ```
+
+### Login Issues / "Invalid Credentials"
+- **Problem**: Intermittent login failures or credential validation issues
+- **Solution**: 
+  1. **Reset demo password**: Use the reset endpoint to refresh credentials
+  2. **Clear cache**: Login issues may be cached, wait 5 minutes or reset password
+  3. **Check user exists**: Use the user management commands to verify user status
 
 ### Blog Images Not Loading
 - **Problem**: Images showing localhost URLs in production
@@ -510,6 +528,13 @@ CustomUser.objects.filter(email='problematic@email.com').delete()
 ### Railway Storage Limit
 - **Problem**: Approaching 100MB storage limit
 - **Solution**: Implemented 10MB per image limit and file validation
+
+### Slow Response Times
+- **Problem**: API responses taking too long
+- **Solution**: 
+  1. **Caching implemented**: User data and responses are cached for 5 minutes
+  2. **Connection pooling**: Database connections are kept alive
+  3. **Performance monitoring**: Response times are tracked and logged
 
 ## 📞 Support
 

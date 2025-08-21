@@ -1,6 +1,6 @@
 """
 Production settings for blog_backend project.
-This file contains settings optimized for AWS deployment.
+Optimized for Railway deployment with performance improvements.
 """
 from .settings import *
 from decouple import config
@@ -10,21 +10,63 @@ import os
 DEBUG = False
 SECRET_KEY = config('SECRET_KEY')
 
+# Performance Optimization - Connection Pooling
+CONN_MAX_AGE = 60  # Keep database connections alive for 60 seconds
+
 # Allowed hosts for production
 ALLOWED_HOSTS = [
-    config('BACKEND_DOMAIN', default='your-domain.com'),
-    config('BACKEND_DOMAIN_WWW', default='www.your-domain.com'),
+    config('BACKEND_DOMAIN', default='fullstackblog-application-production.up.railway.app'),
+    config('BACKEND_DOMAIN_WWW', default='www.fullstackblog-application-production.up.railway.app'),
+    'fullstackblog-application-production.up.railway.app',
     'localhost',
     '127.0.0.1',
 ]
 
-# Database - Keep SQLite for auth, MongoDB for app data
+# Database - Optimized SQLite for auth, MongoDB for app data
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            'timeout': 20,  # Increase timeout for better reliability
+            'isolation_level': None,  # Autocommit mode for better performance
+        },
+        'CONN_MAX_AGE': 60,  # Keep connections alive
     }
 }
+
+# Caching Configuration for Better Performance
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'blog-cache',
+        'TIMEOUT': 300,  # Cache for 5 minutes
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        }
+    }
+}
+
+# Session Configuration for Better Login Reliability  
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = 86400  # 24 hours
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_SAVE_EVERY_REQUEST = False  # Don't save on every request for performance
+
+# JWT Token Settings for Better Login Performance
+from datetime import timedelta
+SIMPLE_JWT.update({
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),  # Longer token life
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+    'SLIDING_TOKEN_LIFETIME': timedelta(hours=24),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=7),
+})
 
 # AWS S3 Configuration for Static and Media Files
 if config('AWS_ACCESS_KEY_ID', default=None):
