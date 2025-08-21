@@ -10,7 +10,7 @@ def publish_all_blogs(request):
     """Temporary endpoint to publish all blogs - remove after use"""
     try:
         from blogs.mongodb_service import mongodb_service
-        if mongodb_service.db:
+        if mongodb_service.db is not None:
             result = mongodb_service.blogs_collection.update_many(
                 {},  # Update all blogs
                 {"$set": {"is_published": True}}
