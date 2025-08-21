@@ -78,6 +78,7 @@ def logout(request):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def reset_demo_password(request):
     """Temporary endpoint to reset demo user password - remove after use"""
     try:
