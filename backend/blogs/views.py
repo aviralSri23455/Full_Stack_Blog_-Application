@@ -64,49 +64,99 @@ def blog_list_create(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def blog_detail(request, pk):
-    blog = get_object_or_404(Blog, pk=pk)
+    # Try to get from Django first, if not found, check if it exists in MongoDB
+    try:
+        blog = get_object_or_404(Blog, pk=pk)
+        is_django_blog = True
+    except:
+        # Blog doesn't exist in Django, check MongoDB
+        blog_data = mongodb_service.get_blog_by_id(int(pk))
+        if not blog_data:
+            return Response({'error': 'Blog not found'}, status=status.HTTP_404_NOT_FOUND)
+        is_django_blog = False
     
     if request.method == 'GET':
-        serializer = BlogSerializer(blog)
-        return Response(serializer.data)
+        if is_django_blog:
+            serializer = BlogSerializer(blog)
+            return Response(serializer.data)
+        else:
+            # Return MongoDB data directly
+            return Response(blog_data)
     
     elif request.method == 'PUT':
-        if blog.author != request.user:
-            return Response({'error': 'You can only edit your own blogs'}, 
-                          status=status.HTTP_403_FORBIDDEN)
-        serializer = BlogSerializer(blog, data=request.data, context={'request': request})
-        if serializer.is_valid():
-            blog = serializer.save()
+        if is_django_blog:
+            if blog.author != request.user:
+                return Response({'error': 'You can only edit your own blogs'}, 
+                              status=status.HTTP_403_FORBIDDEN)
+            serializer = BlogSerializer(blog, data=request.data, context={'request': request})
+            if serializer.is_valid():
+                blog = serializer.save()
+                
+                # Update in MongoDB
+                blog_data = {
+                    'id': blog.id,
+                    'title': blog.title,
+                    'content': blog.content,
+                    'image': blog.image.url if blog.image else '',
+                    'author_id': blog.author.id,
+                    'author_email': blog.author.email,
+                    'author_username': blog.author.username,
+                    'created_at': blog.created_at.isoformat(),
+                    'updated_at': blog.updated_at.isoformat(),
+                    'is_published': blog.is_published
+                }
+                mongodb_service.save_blog(blog_data)
+                
+                return Response(serializer.data)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # Handle MongoDB-only blog updates
+            if blog_data['author_id'] != request.user.id:
+                return Response({'error': 'You can only edit your own blogs'}, 
+                              status=status.HTTP_403_FORBIDDEN)
             
-            # Update in MongoDB
-            blog_data = {
-                'id': blog.id,
-                'title': blog.title,
-                'content': blog.content,
-                'image': blog.image or '',
-                'author_id': blog.author.id,
-                'author_email': blog.author.email,
-                'author_username': blog.author.username,
-                'created_at': blog.created_at.isoformat(),
-                'updated_at': blog.updated_at.isoformat(),
-                'is_published': blog.is_published
-            }
-            mongodb_service.save_blog(blog_data)
+            # Update MongoDB directly
+            update_data = {}
+            if 'title' in request.data:
+                update_data['title'] = request.data['title']
+            if 'content' in request.data:
+                update_data['content'] = request.data['content']
+            if 'is_published' in request.data:
+                update_data['is_published'] = request.data['is_published']
             
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            if update_data:
+                mongodb_service.blogs_collection.update_one(
+                    {'django_id': int(pk)},
+                    {'$set': update_data}
+                )
+            
+            # Get updated blog data
+            updated_blog = mongodb_service.get_blog_by_id(int(pk))
+            return Response(updated_blog)
     
     elif request.method == 'DELETE':
-        if blog.author != request.user:
-            return Response({'error': 'You can only delete your own blogs'}, 
-                          status=status.HTTP_403_FORBIDDEN)
-        
-        # Delete from MongoDB
-        mongodb_service.delete_blog(blog.id)
-        
-        blog.delete()
-        return Response({'message': 'Blog deleted successfully'}, 
-                       status=status.HTTP_204_NO_CONTENT)
+        if is_django_blog:
+            if blog.author != request.user:
+                return Response({'error': 'You can only delete your own blogs'}, 
+                              status=status.HTTP_403_FORBIDDEN)
+            
+            # Delete from MongoDB
+            mongodb_service.delete_blog(blog.id)
+            
+            blog.delete()
+            return Response({'message': 'Blog deleted successfully'}, 
+                           status=status.HTTP_204_NO_CONTENT)
+        else:
+            # Handle MongoDB-only blog deletion
+            if blog_data['author_id'] != request.user.id:
+                return Response({'error': 'You can only delete your own blogs'}, 
+                              status=status.HTTP_403_FORBIDDEN)
+            
+            # Delete from MongoDB only
+            mongodb_service.delete_blog(int(pk))
+            
+            return Response({'message': 'Blog deleted successfully'}, 
+                           status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
