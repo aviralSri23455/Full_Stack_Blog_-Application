@@ -21,11 +21,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the entire project
 COPY . .
 
-# Collect static files
-RUN cd backend && python manage.py collectstatic --noinput || echo "Static files collection skipped"
-
 # Expose port
 EXPOSE $PORT
 
-# Start command
-CMD cd backend && python manage.py migrate --noinput && gunicorn blog_backend.wsgi:application --bind 0.0.0.0:$PORT
+# Start command - collect static files and migrate at runtime when env vars are available
+CMD cd backend && python manage.py collectstatic --noinput && python manage.py migrate --noinput && gunicorn blog_backend.wsgi:application --bind 0.0.0.0:$PORT
