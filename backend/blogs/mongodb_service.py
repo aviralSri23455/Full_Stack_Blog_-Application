@@ -123,13 +123,26 @@ class MongoDBService:
                 {'is_published': True}
             ).sort('created_at', -1).skip(skip).limit(page_size))
             
-            # Convert ObjectIds to strings
-            blogs = [self._convert_objectid_to_string(blog) for blog in blogs]
+            # Convert ObjectIds to strings and add full image URLs
+            processed_blogs = []
+            for blog in blogs:
+                blog = self._convert_objectid_to_string(blog)
+                # Add full image URL if image exists
+                if blog.get('image'):
+                    if blog['image'].startswith('http'):
+                        blog['image_url'] = blog['image']
+                    elif blog['image'].startswith('/media'):
+                        blog['image_url'] = f"https://fullstackblog-application-production.up.railway.app{blog['image']}"
+                    else:
+                        blog['image_url'] = f"https://fullstackblog-application-production.up.railway.app/media/{blog['image']}"
+                else:
+                    blog['image_url'] = None
+                processed_blogs.append(blog)
             
             total = self.blogs_collection.count_documents({'is_published': True})
             
             return {
-                'blogs': blogs,
+                'blogs': processed_blogs,
                 'total': total,
                 'page': page,
                 'page_size': page_size,
@@ -154,6 +167,16 @@ class MongoDBService:
             blog = self.blogs_collection.find_one({'django_id': blog_id})
             if blog:
                 blog = self._convert_objectid_to_string(blog)
+                # Add full image URL if image exists
+                if blog.get('image'):
+                    if blog['image'].startswith('http'):
+                        blog['image_url'] = blog['image']
+                    elif blog['image'].startswith('/media'):
+                        blog['image_url'] = f"https://fullstackblog-application-production.up.railway.app{blog['image']}"
+                    else:
+                        blog['image_url'] = f"https://fullstackblog-application-production.up.railway.app/media/{blog['image']}"
+                else:
+                    blog['image_url'] = None
             return blog
         except Exception as e:
             logger.error(f"Error fetching blog from MongoDB: {e}")
@@ -177,13 +200,26 @@ class MongoDBService:
                 {'author_id': user_id}
             ).sort('created_at', -1).skip(skip).limit(page_size))
             
-            # Convert ObjectIds to strings
-            blogs = [self._convert_objectid_to_string(blog) for blog in blogs]
+            # Convert ObjectIds to strings and add full image URLs
+            processed_blogs = []
+            for blog in blogs:
+                blog = self._convert_objectid_to_string(blog)
+                # Add full image URL if image exists
+                if blog.get('image'):
+                    if blog['image'].startswith('http'):
+                        blog['image_url'] = blog['image']
+                    elif blog['image'].startswith('/media'):
+                        blog['image_url'] = f"https://fullstackblog-application-production.up.railway.app{blog['image']}"
+                    else:
+                        blog['image_url'] = f"https://fullstackblog-application-production.up.railway.app/media/{blog['image']}"
+                else:
+                    blog['image_url'] = None
+                processed_blogs.append(blog)
             
             total = self.blogs_collection.count_documents({'author_id': user_id})
             
             return {
-                'blogs': blogs,
+                'blogs': processed_blogs,
                 'total': total,
                 'page': page,
                 'page_size': page_size,
