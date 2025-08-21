@@ -273,6 +273,58 @@ exit()
 **Issue: "User matching query does not exist"**
 - **Problem**: Trying to get a user that doesn't exist
 - **Solution**: Use command #2 to check if user exists before getting details
+
+## 💻 **PowerShell - Exact Working Commands**
+
+### 🔥 **For Future Reference - Tested & Working**
+
+**Always run these 3 commands in sequence:**
+
+```powershell
+# 1. Navigate to backend directory
+cd "C:\Users\avitu\Desktop\OMI\backend"
+
+# 2. Activate virtual environment  
+& "C:\Users\avitu\Desktop\OMI\.venv\Scripts\Activate.ps1"
+
+# 3. Start Django shell
+python manage.py shell
+```
+
+**Or as a single command:**
+```powershell
+cd "C:\Users\avitu\Desktop\OMI\backend"; & "C:\Users\avitu\Desktop\OMI\.venv\Scripts\Activate.ps1"; python manage.py shell
+```
+
+### ✅ **Shell Status Indicators**
+When successful, you'll see:
+```
+(.venv) PS C:\Users\avitu\Desktop\OMI\backend> python manage.py shell
+9 objects imported automatically (use -v 2 for details).
+
+Python 3.13.5 (tags/v3.13.5:6cb20a2, Jun 11 2025, 16:15:46) [MSC v.1943 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>>
+```
+
+**Key Success Signs:**
+- ✅ `(.venv)` appears in prompt (virtual environment active)
+- ✅ `9 objects imported automatically` (Django models loaded)
+- ✅ `>>>` prompt ready for commands
+
+### 🧪 **Test Commands in Shell**
+Once shell is running, try:
+```python
+# Check total users
+from accounts.models import CustomUser
+print(f'Total users: {CustomUser.objects.count()}')
+
+# Test authentication
+from django.contrib.auth import authenticate
+user = authenticate(username='demo@gmail.com', password='12345678')
+print('Authentication successful:', user is not None)
+```
 # CustomUser.objects.all().delete()
 
 # Exit shell
