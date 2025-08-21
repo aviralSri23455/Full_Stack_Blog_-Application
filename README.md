@@ -4,7 +4,7 @@ A modern, feature-rich blog application built with **React** frontend and **Djan
 
 ## 🌐 Live Demo
 
-- **Frontend**: [https://665e2cd37e84b418a5ca85e8--wonderful-melba-ea4e8b.netlify.app](https://665e2cd37e84b418a5ca85e8--wonderful-melba-ea4e8b.netlify.app)
+- **Frontend**: [https://classy-baklava-8adbb6.netlify.app/)
 - **Backend API**: [https://fullstackblog-application-production.up.railway.app](https://fullstackblog-application-production.up.railway.app)
 
 ### � Demo Credentials
