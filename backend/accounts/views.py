@@ -75,3 +75,23 @@ def logout(request):
         return Response({'message': 'Successfully logged out'}, status=status.HTTP_205_RESET_CONTENT)
     except Exception as e:
         return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def reset_demo_password(request):
+    """Temporary endpoint to reset demo user password - remove after use"""
+    try:
+        user = CustomUser.objects.get(email='demo@gmail.com')
+        user.set_password('12345678')
+        user.save()
+        return Response({'message': 'Demo user password reset successfully'})
+    except CustomUser.DoesNotExist:
+        # Create the user if it doesn't exist
+        user = CustomUser.objects.create_user(
+            email='demo@gmail.com',
+            username='demo',
+            password='12345678'
+        )
+        return Response({'message': 'Demo user created successfully'})
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
