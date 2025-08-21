@@ -150,5 +150,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # Create media directory if it doesn't exist
 os.makedirs(MEDIA_ROOT, exist_ok=True)
 
+# File upload settings - Keep within Railway's 100MB limit
+FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10MB max per file in memory
+DATA_UPLOAD_MAX_MEMORY_SIZE = 15 * 1024 * 1024  # 15MB max total upload size
+FILE_UPLOAD_PERMISSIONS = 0o644
+
+# Allowed file types for images
+ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+MAX_IMAGE_SIZE = 10 * 1024 * 1024  # 10MB max per image
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
