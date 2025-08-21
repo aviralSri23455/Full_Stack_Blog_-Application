@@ -156,14 +156,22 @@ Frontend will run on: `http://localhost:5173`
 
 **Prerequisites:**
 ```bash
-# Make sure you're in backend directory with virtual environment activated
+# IMPORTANT: Make sure you're in the ROOT directory first
+cd C:\Users\avitu\Desktop\OMI  # or your project path
+
+# Activate virtual environment (you'll see (venv) in prompt)
+.\.venv\Scripts\Activate.ps1
+
+# Navigate to backend directory where manage.py is located
 cd backend
-# Virtual environment should be activated (you'll see (venv) in prompt)
+
+# Now you can run Django commands
 ```
 
 ### 1. Check All Users (Single Command)
 ```bash
-python manage.py shell -c "from accounts.models import CustomUser; print(f'Total users: {CustomUser.objects.count()}'); users = CustomUser.objects.all(); [print(f'ID: {user.id}, Email: {user.email}, Username: {user.username}') for user in users]"
+# FULL COMMAND (run from project root):
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; print(f'Total users: {CustomUser.objects.count()}'); users = CustomUser.objects.all(); [print(f'ID: {user.id}, Email: {user.email}, Username: {user.username}') for user in users]"
 ```
 **Expected Output:**
 ```
@@ -173,7 +181,8 @@ ID: 3, Email: demo@gmail.com, Username: demo
 
 ### 2. Check if Specific User Exists
 ```bash
-python manage.py shell -c "from accounts.models import CustomUser; email = 'demo@gmail.com'; exists = CustomUser.objects.filter(email=email).exists(); print(f'User {email} exists: {exists}')"
+# FULL COMMAND (run from project root):
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; email = 'demo@gmail.com'; exists = CustomUser.objects.filter(email=email).exists(); print(f'User {email} exists: {exists}')"
 ```
 **Expected Output:**
 ```
@@ -182,7 +191,8 @@ User demo@gmail.com exists: True
 
 ### 3. Get Specific User Details
 ```bash
-python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); print(f'Found user: {user.username} ({user.email})')"
+# FULL COMMAND (run from project root):
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); print(f'Found user: {user.username} ({user.email})')"
 ```
 **Expected Output:**
 ```
@@ -191,7 +201,8 @@ Found user: demo (demo@gmail.com)
 
 ### 4. Create New User
 ```bash
-python manage.py shell -c "from accounts.models import CustomUser; demo_user = CustomUser.objects.create_user(username='demo', email='demo@gmail.com', password='12345678'); print(f'Created demo user: {demo_user.username} ({demo_user.email})')"
+# FULL COMMAND (run from project root):
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; demo_user = CustomUser.objects.create_user(username='demo', email='demo@gmail.com', password='12345678'); print(f'Created demo user: {demo_user.username} ({demo_user.email})')"
 ```
 **Expected Output:**
 ```
@@ -200,7 +211,8 @@ Created demo user: demo (demo@gmail.com)
 
 ### 5. Delete Specific User
 ```bash
-python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); print(f'Found user: {user.username} ({user.email})'); user.delete(); print('User deleted successfully'); print(f'Total users now: {CustomUser.objects.count()}')"
+# FULL COMMAND (run from project root):
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); print(f'Found user: {user.username} ({user.email})'); user.delete(); print('User deleted successfully'); print(f'Total users now: {CustomUser.objects.count()}')"
 ```
 **Expected Output:**
 ```
@@ -211,15 +223,48 @@ Total users now: 0
 
 ### 6. Update User Password
 ```bash
-python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); user.set_password('newpassword123'); user.save(); print('Password updated successfully')"
+# FULL COMMAND (run from project root):
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); user.set_password('newpassword123'); user.save(); print('Password updated successfully')"
 ```
 
 ### 7. Delete All Users (⚠️ CAREFUL!)
 ```bash
-python manage.py shell -c "from accounts.models import CustomUser; count = CustomUser.objects.count(); CustomUser.objects.all().delete(); print(f'Deleted {count} users. Total users now: {CustomUser.objects.count()}')"
+# FULL COMMAND (run from project root):
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; count = CustomUser.objects.count(); CustomUser.objects.all().delete(); print(f'Deleted {count} users. Total users now: {CustomUser.objects.count()}')"
+```
+
+### 🛠️ Step-by-Step Alternative (If you prefer interactive shell)
+
+```bash
+# From project root directory
+cd backend
+
+# Start Django shell
+python manage.py shell
+
+# Then run these Python commands one by one:
+```
+
+```python
+# Import user model
+from accounts.models import CustomUser
+
+# Check total users
+print(f"Total users: {CustomUser.objects.count()}")
+
+# List all users
+for user in CustomUser.objects.all():
+    print(f"ID: {user.id}, Email: {user.email}, Username: {user.username}")
+
+# Exit shell when done
+exit()
 ```
 
 ### 🚨 Common Issues & Solutions
+
+**Issue: "can't open file 'manage.py': [Errno 2] No such file or directory"**
+- **Problem**: You're not in the backend directory where manage.py is located
+- **Solution**: Make sure to run `cd backend` first, or use the full commands above
 
 **Issue: "User with this email already exists"**
 - **Problem**: User exists in SQLite but was deleted from MongoDB
