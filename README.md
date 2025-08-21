@@ -120,64 +120,82 @@ Frontend will run on: `http://localhost:5173`
 
 ## 🔍 Local Development - User Management
 
-### Check Users in Django Shell
+### ✅ Tested Django Shell Commands (All Working)
 
+**Prerequisites:**
 ```bash
-# Make sure you're in backend directory with venv activated
+# Make sure you're in backend directory with virtual environment activated
 cd backend
-python manage.py shell
+# Virtual environment should be activated (you'll see (venv) in prompt)
 ```
 
-### Django Shell Commands for User Management
+### 1. Check All Users (Single Command)
+```bash
+python manage.py shell -c "from accounts.models import CustomUser; print(f'Total users: {CustomUser.objects.count()}'); users = CustomUser.objects.all(); [print(f'ID: {user.id}, Email: {user.email}, Username: {user.username}') for user in users]"
+```
+**Expected Output:**
+```
+Total users: 1
+ID: 3, Email: demo@gmail.com, Username: demo
+```
 
-```python
-# Import user model
-from accounts.models import CustomUser
+### 2. Check if Specific User Exists
+```bash
+python manage.py shell -c "from accounts.models import CustomUser; email = 'demo@gmail.com'; exists = CustomUser.objects.filter(email=email).exists(); print(f'User {email} exists: {exists}')"
+```
+**Expected Output:**
+```
+User demo@gmail.com exists: True
+```
 
-# Check total users
-print(f"Total users: {CustomUser.objects.count()}")
+### 3. Get Specific User Details
+```bash
+python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); print(f'Found user: {user.username} ({user.email})')"
+```
+**Expected Output:**
+```
+Found user: demo (demo@gmail.com)
+```
 
-# List all users with details
-users = CustomUser.objects.all()
-for user in users:
-    print(f"ID: {user.id}, Email: {user.email}, Username: {user.username}")
+### 4. Create New User
+```bash
+python manage.py shell -c "from accounts.models import CustomUser; demo_user = CustomUser.objects.create_user(username='demo', email='demo@gmail.com', password='12345678'); print(f'Created demo user: {demo_user.username} ({demo_user.email})')"
+```
+**Expected Output:**
+```
+Created demo user: demo (demo@gmail.com)
+```
 
-# Alternative: Get user details as dictionary
-user_list = list(CustomUser.objects.values('id', 'email', 'username', 'date_joined'))
-for user in user_list:
-    print(user)
+### 5. Delete Specific User
+```bash
+python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); print(f'Found user: {user.username} ({user.email})'); user.delete(); print('User deleted successfully'); print(f'Total users now: {CustomUser.objects.count()}')"
+```
+**Expected Output:**
+```
+Found user: demo (demo@gmail.com)
+User deleted successfully
+Total users now: 0
+```
 
-# Check if specific user exists
-email_to_check = 'demo@gmail.com'
-exists = CustomUser.objects.filter(email=email_to_check).exists()
-print(f"User {email_to_check} exists: {exists}")
+### 6. Update User Password
+```bash
+python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.get(email='demo@gmail.com'); user.set_password('newpassword123'); user.save(); print('Password updated successfully')"
+```
 
-# Get specific user details
-try:
-    user = CustomUser.objects.get(email='demo@gmail.com')
-    print(f"User found: {user.username} ({user.email})")
-except CustomUser.DoesNotExist:
-    print("User not found")
+### 7. Delete All Users (⚠️ CAREFUL!)
+```bash
+python manage.py shell -c "from accounts.models import CustomUser; count = CustomUser.objects.count(); CustomUser.objects.all().delete(); print(f'Deleted {count} users. Total users now: {CustomUser.objects.count()}')"
+```
 
-# Create new user programmatically
-new_user = CustomUser.objects.create_user(
-    username='testuser',
-    email='test@example.com',
-    password='testpassword123'
-)
-print(f"Created user: {new_user.username}")
+### 🚨 Common Issues & Solutions
 
-# Update user password
-user = CustomUser.objects.get(email='demo@gmail.com')
-user.set_password('newpassword123')
-user.save()
-print("Password updated successfully")
+**Issue: "User with this email already exists"**
+- **Problem**: User exists in SQLite but was deleted from MongoDB
+- **Solution**: Use command #5 to delete the user from SQLite first
 
-# Delete specific user
-CustomUser.objects.filter(email='test@example.com').delete()
-print("User deleted")
-
-# Delete all users (CAREFUL!)
+**Issue: "User matching query does not exist"**
+- **Problem**: Trying to get a user that doesn't exist
+- **Solution**: Use command #2 to check if user exists before getting details
 # CustomUser.objects.all().delete()
 
 # Exit shell
@@ -466,7 +484,6 @@ CustomUser.objects.filter(email='problematic@email.com').delete()
 
 
 **🎉 Built with ❤️ using React, Django, and MongoDB**
-
 
 
 
