@@ -296,6 +296,30 @@ python manage.py shell
 cd "C:\Users\avitu\Desktop\OMI\backend"; & "C:\Users\avitu\Desktop\OMI\.venv\Scripts\Activate.ps1"; python manage.py shell
 ```
 
+### 🗑️ **Database Cleaning (Reset All Data)**
+
+**Clean all databases with one command:**
+```powershell
+cd "C:\Users\avitu\Desktop\OMI\backend"; & "C:\Users\avitu\Desktop\OMI\.venv\Scripts\Activate.ps1"; python clean_databases.py
+```
+
+**Step-by-step database cleaning:**
+```powershell
+# 1. Navigate to backend directory
+cd "C:\Users\avitu\Desktop\OMI\backend"
+
+# 2. Activate virtual environment  
+& "C:\Users\avitu\Desktop\OMI\.venv\Scripts\Activate.ps1"
+
+# 3. Clean all databases
+python clean_databases.py
+```
+
+**What gets cleaned:**
+- ✅ Django SQLite users and blogs
+- ✅ MongoDB Atlas users and blogs  
+- ✅ Complete database reset for fresh start
+
 ### ✅ **Shell Status Indicators**
 When successful, you'll see:
 ```
@@ -517,6 +541,64 @@ Full_Stack_Blog_Application/
 
 ### Utility Endpoints
 - `GET /api/health/` - Health check endpoint
+
+## 🧪 Database Management & Testing
+
+### 🗑️ Clean All Databases
+
+To completely reset both Django SQLite and MongoDB databases (useful for testing or starting fresh):
+
+**Prerequisites:**
+```powershell
+# Navigate to backend directory
+cd "C:\Users\avitu\Desktop\OMI\backend"
+
+# Activate virtual environment
+& "C:\Users\avitu\Desktop\OMI\.venv\Scripts\Activate.ps1"
+```
+
+**Clean All Data:**
+```powershell
+# Run the database cleaning script
+python clean_databases.py
+```
+
+**What Gets Cleaned:**
+- ✅ **Django Users** - All user accounts removed from SQLite
+- ✅ **Django Blogs** - All blog records removed from SQLite  
+- ✅ **MongoDB Users** - All user data removed from MongoDB Atlas
+- ✅ **MongoDB Blogs** - All blog content removed from MongoDB Atlas
+- ✅ **Complete Reset** - Fresh start with empty databases
+
+### 🔍 Test All Endpoints
+
+**Authentication Testing:**
+```powershell
+# Test user creation
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; user = CustomUser.objects.create_user(username='test@example.com', email='test@example.com', password='testpass123'); print(f'User created: {user.username}')"
+
+# Test authentication
+cd backend && python manage.py shell -c "from django.contrib.auth import authenticate; result = authenticate(username='test@example.com', password='testpass123'); print('Auth successful:', result is not None)"
+
+# Count total users
+cd backend && python manage.py shell -c "from accounts.models import CustomUser; print(f'Total users: {CustomUser.objects.count()}')"
+```
+
+**Blog Testing:**
+```powershell
+# Test MongoDB connection
+cd backend && python manage.py shell -c "from blogs.mongodb_service import MongoDBService; db = MongoDBService(); print('MongoDB connected:', db.db is not None)"
+
+# Test blog operations
+cd backend && python manage.py shell -c "from blogs.models import Blog; from accounts.models import CustomUser; user = CustomUser.objects.first(); blog = Blog.objects.create(title='Test Blog', content='Test content', author=user) if user else None; print(f'Blog created: {blog.title if blog else \"No user found\"}')"
+```
+
+**Production Endpoint Testing:**
+- **Backend Health**: `https://your-railway-app.up.railway.app/api/health/`
+- **Frontend**: `https://your-netlify-app.netlify.app/`
+- **API Endpoints**: Test via Postman or frontend interface
+
+⚠️ **Important**: Database operations don't affect deployment - only local data is modified.
 
 ## ✨ Features
 
